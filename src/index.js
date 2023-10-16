@@ -20,8 +20,11 @@ function handleSearch(event) {
   refs.gallery.innerHTML = '';
   page = 1;
   searchText = event.currentTarget.elements.searchQuery.value;
-  getImages(searchText);
-  refs.loadMore.style.display = 'block';
+  getImages(searchText).then(total => {
+    if (total > 40) {
+      refs.loadMore.style.display = 'block';
+    }
+  });
 }
 
 async function getImages(searchText) {
@@ -45,24 +48,22 @@ async function getImages(searchText) {
       return;
     }
     currentHits += 40;
-    console.log(currentHits);
-    if (currentHits >= response.data.totalHits) {
+    const totalHits = response.data.totalHits;
+    if (currentHits >= totalHits) {
       refs.loadMore.style.display = 'none';
-    }
-    if (searchText !== previousText) {
-      Notiflix.Notify.success(
-        `Hooray! We found ${response.data.totalHits} images.`
-      );
-      previousText = searchText;
     }
     const hits = response.data.hits;
     const cards = hits.map(mapGallery);
     const markup = cards.map(createMarkup).join('');
     refs.gallery.insertAdjacentHTML('beforeend', markup);
-    console.log(response);
+    if (searchText !== previousText) {
+      Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+      previousText = searchText;
+      new SimpleLightbox('.gallery a');
+    }
+    return totalHits;
   } catch (error) {
-    // Notiflix.Notify.failure('Error', error);
-    console.log('Error', error);
+    Notiflix.Notify.failure(error.message);
   }
 }
 
@@ -96,7 +97,7 @@ function createMarkup({
   downloads,
 }) {
   return `<div class="photo-card">
-      <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+      <a href="${largeImageURL}"><img src="${webformatURL}" alt="${tags}" loading="lazy" /></a>
       <div class="info">
         <p class="info-item">
           <b>Likes</b>

@@ -1,0 +1,36 @@
+.gallery img {
+  width: 100%;
+  height: 200px;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.gallery div {
+  width: 300px;
+}
+
+.search-form {
+  margin: 0 0 20px 0;
+}
+
+.load-more {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.load-more:hover {
+  background-color: #0056b3;
+}
