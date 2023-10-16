@@ -13,6 +13,7 @@ let page = 1;
 let searchText = '';
 let previousText = '';
 let currentHits = 0;
+const lightbox = new SimpleLightbox('.gallery a');
 
 refs.form.addEventListener('submit', handleSearch);
 function handleSearch(event) {
@@ -47,19 +48,22 @@ async function getImages(searchText) {
       );
       return;
     }
-    currentHits += 40;
     const totalHits = response.data.totalHits;
     if (currentHits >= totalHits) {
+      Notiflix.Notify.warning(
+        `We're sorry, but you've reached the end of search results.`
+      );
       refs.loadMore.style.display = 'none';
     }
+    currentHits += 40;
     const hits = response.data.hits;
     const cards = hits.map(mapGallery);
     const markup = cards.map(createMarkup).join('');
     refs.gallery.insertAdjacentHTML('beforeend', markup);
+    lightbox.refresh();
     if (searchText !== previousText) {
       Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
       previousText = searchText;
-      new SimpleLightbox('.gallery a');
     }
     return totalHits;
   } catch (error) {
