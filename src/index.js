@@ -12,6 +12,7 @@ refs.loadMore.style.display = 'none';
 let page = 1;
 let searchText = '';
 let previousText = '';
+let currentHits = 0;
 
 refs.form.addEventListener('submit', handleSearch);
 function handleSearch(event) {
@@ -37,6 +38,17 @@ async function getImages(searchText) {
   };
   try {
     const response = await axios.get('https://pixabay.com/api/', options);
+    if (response.data.total === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
+    currentHits += 40;
+    console.log(currentHits);
+    if (currentHits >= response.data.totalHits) {
+      refs.loadMore.style.display = 'none';
+    }
     if (searchText !== previousText) {
       Notiflix.Notify.success(
         `Hooray! We found ${response.data.totalHits} images.`
